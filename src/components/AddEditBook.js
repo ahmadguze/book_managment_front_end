@@ -4,7 +4,7 @@ import Select from 'react-select';
 import config from '../confg'
 const url = config.BASE_URL;
 
-const AddEditBook = ({text, onClick}) => {
+const AddEditBook = ({ text, onClick }) => {
     const [name, setName] = useState('')
     const [isbn, setIsbn] = useState('')
     const [author, setAuthor] = useState('')
@@ -13,12 +13,13 @@ const AddEditBook = ({text, onClick}) => {
     const fetchAuthors = async () => {
         const res = await fetch(`${url}/authors`)
         const data = await res.json()
-        
+
         return data.map((author) => {
-            
-            return {label: author.first_name+' '+author.last_name,
-             value: author._id}
-         })
+            return {
+                label: `${author.first_name} ${author.last_name}`,
+                value: author._id
+            }
+        })
     }
 
     useEffect(() => {
@@ -31,19 +32,22 @@ const AddEditBook = ({text, onClick}) => {
     const getSelectedAuthor = (selectedAuthor) => {
         setAuthor(selectedAuthor)
     }
-    const onSubmit = (e) =>{
+    const onSubmit = async (e) => {
         e.preventDefault()
         var book = {}
         if (name)
-           book.name = name
-        if(isbn)
-          book.isbn = isbn
-        if(author)
-          book.author = author.value
-        onClick(book)
-        setAuthor('')
-        setIsbn('')
-        setName('')
+            book.name = name
+        if (isbn)
+            book.isbn = isbn
+        if (author)
+            book.author = author.value
+        var result = await onClick(book)
+        console.log(result)
+        if (result) {
+            setAuthor('')
+            setIsbn('')
+            setName('')
+        }
     }
     return (
         <form className='add-form' onSubmit={onSubmit}>
@@ -67,7 +71,7 @@ const AddEditBook = ({text, onClick}) => {
             </div>
             <div className='form-control'>
                 <label>Author</label>
-                <Select options={authors} value={author} onChange={getSelectedAuthor} className="custom_select"/>
+                <Select options={authors} value={author} onChange={getSelectedAuthor} className="custom_select" />
             </div>
             <input type='submit' value={text} className='btn btn-block' />
 

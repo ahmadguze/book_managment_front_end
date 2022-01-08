@@ -1,14 +1,22 @@
 import React from 'react'
 import { useState } from 'react'
 
-const AddEditAuthor = ({ text, addAuthor }) => {
-    const [first_name, setFirst_name] = useState('')
-    const [last_name, setLast_name] = useState('')
-    const onSubmit = (e) => {
+const AddEditAuthor = ({ text, onClick }) => {
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+
+    const onSubmit = async (e) => {
         e.preventDefault()
-        addAuthor({ first_name, last_name })
-        setFirst_name('')
-        setLast_name('')
+        var author = {}
+        if (firstName)
+            author.first_name = firstName
+        if (lastName)
+            author.last_name = lastName
+        var result = await onClick(author)
+        if (result) {
+            setFirstName('')
+            setLastName('')
+        }
 
     }
     return (
@@ -18,8 +26,8 @@ const AddEditAuthor = ({ text, addAuthor }) => {
                 <input
                     type='text'
                     placeholder='First name'
-                    value={first_name}
-                    onChange={(e) => setFirst_name(e.target.value)}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                 />
             </div>
             <div className='form-control'>
@@ -27,8 +35,8 @@ const AddEditAuthor = ({ text, addAuthor }) => {
                 <input
                     type='text'
                     placeholder='Last name'
-                    value={last_name}
-                    onChange={(e) => setLast_name(e.target.value)}
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                 />
             </div>
             <input type='submit' value={text} className='btn btn-block' />

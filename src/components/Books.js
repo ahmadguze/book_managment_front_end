@@ -5,6 +5,7 @@ import Item from './Item'
 import Book from './Book'
 import AddEditBook from './AddEditBook'
 import config from '../confg'
+import Back from './Back'
 
 const url = config.BASE_URL;
 const Books = () => {
@@ -12,7 +13,7 @@ const Books = () => {
     const [itemId, setItemId] = useState([])
     const [showAdd, setShowAdd] = useState(false)
     const [showEdit, setShowEdit] = useState(false)
-    
+
     useEffect(() => {
         const getBooks = async () => {
             const booksFromServer = await fetchBooks()
@@ -21,7 +22,7 @@ const Books = () => {
         getBooks()
     }, [])
 
-    const fetchBooks = async () =>  (await fetch(`${url}/books`)).json()
+    const fetchBooks = async () => (await fetch(`${url}/books`)).json()
 
     const addBook = async (book) => {
         var res = await fetch(`${url}/book`, {
@@ -32,11 +33,14 @@ const Books = () => {
             body: JSON.stringify(book)
         })
         var resData = await res.json()
-        if (res.status === 400)
+        if (res.status === 400) {
             alert(`creation of the book faild because of ${resData.message}`)
-
+            return false
+        }
         const data = await fetchBooks()
         setBooks(data)
+
+        return true
     }
 
     const editBook = async (book) => {
@@ -48,12 +52,17 @@ const Books = () => {
             body: JSON.stringify(book)
         })
 
-        if (res.status === 404)
+        if (res.status === 404) {
             alert("Book not found")
-        if (res.status === 400)
+            return false
+        }
+        if (res.status === 400) {
             alert("please enter valid data")
+            return false
+        }
         const data = await fetchBooks()
         setBooks(data)
+        return true
     }
 
     const deleteBook = async (e, id) => {
@@ -86,7 +95,7 @@ const Books = () => {
         <div className="container">
             <Header onClickAdd={onClickAdd} showAdd={showAdd} title="Books" />
             {showAdd || showEdit ? <AddEditBook text={showAdd ? "Add book" : showEdit ? "Edit book" : ''} onClick={showAdd ? addBook : showEdit ? editBook : ''} /> : ''}
-            {books.length === 0 ? "No books to show" : ''}
+            {books.length === 0 ? <div>No books to show</div> : ''}
             {
                 books.map((book) => {
                     const component = () => (<Book book={book} />)
@@ -94,6 +103,7 @@ const Books = () => {
                 }
                 )
             }
+            <Back />
         </div>
     )
 }

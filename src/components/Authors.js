@@ -4,6 +4,7 @@ import Item from './Item'
 import Author from './Author'
 import AddEditAuthor from './AddEditAuthor'
 import config from '../confg'
+import Back from './Back'
 
 const url = config.BASE_URL
 const Authors = () => {
@@ -20,7 +21,7 @@ const Authors = () => {
         getAuthors()
     }, [])
 
-    const fetchAuthors = async () =>  (await fetch(`${url}/authors`)).json()
+    const fetchAuthors = async () => (await fetch(`${url}/authors`)).json()
 
     const addAuthor = async (author) => {
         var res = await fetch(`${url}/author`, {
@@ -31,11 +32,14 @@ const Authors = () => {
             body: JSON.stringify(author)
         })
         var resData = await res.json()
-        if (res.status === 400)
-           alert(`creation of the book faild because of ${resData.message}`)
+        if (res.status === 400) {
+            alert(`creation of the book faild because of ${resData.message}`)
+            return false
+        }
 
         const data = await fetchAuthors()
         setAuthors(data)
+        return true
     }
 
     const editAuthor = async (book) => {
@@ -46,13 +50,18 @@ const Authors = () => {
             },
             body: JSON.stringify(book)
         })
-        
-        if (res.status === 404)
+
+        if (res.status === 404) {
             alert("Author not found")
-        if (res.status === 400)
+            return false
+        }
+        if (res.status === 400) {
             alert("please enter valid data")
+            return false
+        }
         const data = await fetchAuthors()
         setAuthors(data)
+        return true
     }
 
     const deleteAuthor = async (e, id) => {
@@ -87,8 +96,9 @@ const Authors = () => {
     return (
         <div className="container">
             <Header onClickAdd={onClickAdd} showAdd={showAdd} title="Authors" />
-            {showAdd || showEdit ? <AddEditAuthor text={showAdd ? "Add Author" : showEdit ? "Edit Author" : ''} addAuthor={showAdd ? addAuthor : showEdit ? editAuthor : ''} /> : ''}
-            {authors.length === 0 ? "No authors to show" : ''}
+            {showAdd || showEdit ? <AddEditAuthor text={showAdd ? "Add Author" : showEdit ? "Edit Author" : ''}
+                onClick={showAdd ? addAuthor : showEdit ? editAuthor : ''} /> : ''}
+            {authors.length === 0 ? <div>No authors to show</div>: ''}
             {
                 authors.map((author) => {
                     return (<Item onClickEdit={onClickEdit} onDelete={deleteAuthor} key={author._id} itemId={author._id} name={`${author.first_name} ${author.last_name}`}
@@ -96,6 +106,7 @@ const Authors = () => {
                 }
                 )
             }
+            <Back />
         </div>
     )
 }
