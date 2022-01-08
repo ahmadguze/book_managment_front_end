@@ -59,7 +59,7 @@ const AddEditBook = ({text, onClick}) => {
             <div className='form-control'>
                 <label>Isbn</label>
                 <input
-                    type='number'
+                    type='text'
                     placeholder='Isbn'
                     value={isbn}
                     onChange={(e) => setIsbn(e.target.value)}
